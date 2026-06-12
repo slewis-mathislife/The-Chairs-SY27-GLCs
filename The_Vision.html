@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LOOK. SOUND. FEEL.  ·  The Chairs Kickoff</title>
+<style>
+  :root {
+    --blue-deep: #0E2A4A;
+    --blue-brand: #13B5EA;
+    --blue-tint: #E8EFF7;
+    --blue-tint-2: #F4F8FB;
+    --text-dark: #111111;
+    --text-body: #333333;
+    --text-muted: #777777;
+    --white: #FFFFFF;
+    --shadow: 0 4px 20px rgba(14, 42, 74, 0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Calibri, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--blue-tint-2);
+    color: var(--text-body);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 24px; }
+  header .tag {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--blue-brand);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  header h1 {
+    font-size: 32px;
+    color: var(--blue-deep);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  header .subhead {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-style: italic;
+  }
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .dot {
+    width: 36px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--blue-tint);
+    transition: background 0.2s ease;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--blue-brand); }
+  .dot.done { background: var(--blue-deep); }
+
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 40px 36px;
+    border-left: 6px solid var(--blue-brand);
+  }
+  .card-num {
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--blue-brand);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .card-headline {
+    font-size: 24px;
+    color: var(--blue-brand);
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+  .card-question {
+    font-size: 30px;
+    color: var(--blue-deep);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 20px;
+  }
+  .card-framing {
+    font-size: 17px;
+    font-style: italic;
+    color: var(--text-body);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .spark-toggle {
+    background: transparent;
+    border: none;
+    color: var(--blue-brand);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    padding: 8px 0;
+    text-align: left;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .spark-toggle:hover { opacity: 0.7; }
+  .spark-toggle .arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+  .spark-toggle.open .arrow { transform: rotate(90deg); }
+  .sparks {
+    display: none;
+    background: var(--blue-tint);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
+  .sparks.open { display: block; }
+  .sparks p {
+    font-size: 15px;
+    color: var(--text-body);
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+  .sparks p:last-child { margin-bottom: 0; }
+  .sparks p:before {
+    content: "•  ";
+    color: var(--blue-brand);
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .notes-section {
+    border-top: 1px solid var(--blue-tint);
+    padding-top: 24px;
+    margin-top: 8px;
+  }
+  .notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .notes-label {
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .saved-indicator {
+    font-size: 12px;
+    color: var(--blue-brand);
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .saved-indicator.show { opacity: 1; }
+  .saved-indicator.idle { opacity: 0.5; color: var(--text-muted); }
+  .notes-help {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--blue-tint);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text-dark);
+    resize: vertical;
+    transition: border-color 0.2s ease;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--blue-brand);
+  }
+
+  /* CARD 5 EMPHASIS - FIRST MOVE */
+  .card.commit {
+    border-left-color: var(--blue-deep);
+    background: linear-gradient(180deg, var(--white) 0%, #FCFDFE 100%);
+  }
+  .card.commit .card-question { color: var(--blue-deep); }
+  .card.commit .notes-section {
+    background: var(--blue-tint);
+    margin: 16px -36px -40px;
+    padding: 24px 36px 32px;
+    border-radius: 0 0 16px 0;
+  }
+  .card.commit .notes-label {
+    color: var(--blue-deep);
+    letter-spacing: 2px;
+  }
+  .card.commit textarea {
+    background: var(--white);
+    border-color: var(--blue-deep);
+    min-height: 80px;
+  }
+
+  .dual-notes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  @media (min-width: 600px) {
+    .dual-notes { grid-template-columns: 1fr 1fr; }
+  }
+  .dual-notes .field label {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: var(--blue-deep);
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: block;
+    text-transform: uppercase;
+  }
+  .dual-notes textarea {
+    min-height: 72px;
+  }
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+    gap: 12px;
+  }
+  .btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s ease;
+    border: 1.5px solid transparent;
+  }
+  .btn-primary {
+    background: var(--blue-brand);
+    color: var(--white);
+    border-color: var(--blue-brand);
+  }
+  .btn-primary:hover {
+    background: var(--blue-deep);
+    border-color: var(--blue-deep);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--blue-brand);
+    border-color: var(--blue-brand);
+  }
+  .btn-ghost:hover {
+    background: var(--blue-brand);
+    color: var(--white);
+  }
+  .btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .resume-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 36px;
+    border-top: 6px solid var(--blue-brand);
+    text-align: center;
+  }
+  .resume-card h2 {
+    font-size: 26px;
+    color: var(--blue-deep);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .resume-card p {
+    font-size: 16px;
+    color: var(--text-body);
+    margin-bottom: 24px;
+  }
+  .resume-card .timestamp {
+    display: inline-block;
+    background: var(--blue-tint);
+    color: var(--blue-deep);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+  }
+  .resume-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .summary .card-question { font-size: 26px; }
+  .summary-section {
+    background: var(--blue-tint-2);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    border-left: 3px solid var(--blue-brand);
+  }
+  .summary-section.commit {
+    border-left-color: var(--blue-deep);
+    background: var(--blue-tint);
+    padding: 22px;
+  }
+  .summary-section h3 {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--blue-brand);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .summary-section.commit h3 {
+    color: var(--blue-deep);
+    font-size: 14px;
+  }
+  .summary-section .q {
+    font-size: 16px;
+    color: var(--text-dark);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .summary-section.commit .q { font-size: 18px; }
+  .summary-section .a {
+    font-size: 15px;
+    color: var(--text-body);
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+  .summary-section .a.empty {
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .summary-section .commit-detail {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(14, 42, 74, 0.12);
+  }
+  .summary-section .commit-detail-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--blue-deep);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .actions .btn { flex: 1; min-width: 140px; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--blue-deep);
+    color: var(--white);
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 100;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="tag">THE CHAIRS KICKOFF  ·  GLC PARTNER TIME</div>
+    <h1>LOOK.  SOUND.  FEEL.</h1>
+    <div class="subhead">Build the vision for excellence.</div>
+  </header>
+
+  <div class="dots" id="dots"></div>
+  <div id="cardArea"></div>
+  <div class="nav" id="nav"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer>Newark Collegiate  ·  SY27</footer>
+
+<script>
+const STORAGE_KEY = "collegiate_vision_v1";
+
+const PROMPTS = [
+  {
+    num: "01",
+    headline: "LOOK",
+    question: "What does excellence LOOK like for our team?",
+    framing: "Walk through the hallways. Step into classrooms. What do you see when we're at our best?",
+    spark: [
+      "What does a classroom look like when learning is happening?",
+      "What do you see in the hallways between classes?",
+      "What student work is displayed, and where?",
+    ],
+  },
+  {
+    num: "02",
+    headline: "SOUND",
+    question: "What does excellence SOUND like for our team?",
+    framing: "Listen. Whose voices do you hear? What are they talking about? What's the tone when we're at our best?",
+    spark: [
+      "What conversations are happening between students?",
+      "How do teachers and students talk to each other?",
+      "What language defines our work?",
+    ],
+  },
+  {
+    num: "03",
+    headline: "FEEL",
+    question: "What does excellence FEEL like for our team?",
+    framing: "The energy. The atmosphere. What does it feel like to be here when we're at our best?",
+    spark: [
+      "What's the energy a student carries through the day?",
+      "What's the feeling when a kid is struggling?",
+      "What's the feeling on a hard day vs a great day?",
+    ],
+  },
+  {
+    num: "04",
+    headline: "Alignment",
+    question: "How does this vision support our school and regional priorities?",
+    framing: "Connect the vision to the four priorities and the values we share with the region. Make it explicit.",
+    spark: [
+      "How does this serve One Pride, Built on Trust?",
+      "How does this serve All Means ALL?",
+      "How does this serve Do the Work, See the Work?",
+      "How does this serve Clear Decisions, Clear Roles?",
+    ],
+  },
+  {
+    num: "05",
+    headline: "First move",
+    question: "What's the one specific thing we'll do in August to bring this vision to life?",
+    framing: "Pick a single move. Name what, name when. Real enough to do on day one.",
+    spark: [
+      "A symbol, ritual, or routine you launch on day 1?",
+      "A specific space (hallway, classroom, gathering area) you transform?",
+      "A piece of language everyone commits to using?",
+    ],
+    commit: true,
+  },
+];
+
+let currentIdx = 0;
+let notes = PROMPTS.map(() => "");
+let commitDetail = { what: "", when: "" };
+let sparksOpen = PROMPTS.map(() => false);
+let isComplete = false;
+let mode = "loading";
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data.notes) || data.notes.length !== PROMPTS.length) return null;
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveState() {
+  try {
+    const data = {
+      notes: notes,
+      commitDetail: commitDetail,
+      currentIdx: currentIdx,
+      timestamp: new Date().toISOString(),
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function clearState() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+}
+
+function hasMeaningfulNotes(notesArr, commit) {
+  const noteHas = notesArr.some(n => n && n.trim().length > 0);
+  const commitHas = commit && (
+    (commit.what && commit.what.trim().length > 0) ||
+    (commit.when && commit.when.trim().length > 0)
+  );
+  return noteHas || commitHas;
+}
+
+function formatTimestamp(iso) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString("en-US", {
+      month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+    });
+  } catch (e) {
+    return "earlier";
+  }
+}
+
+function render() {
+  if (mode === "resume-prompt") {
+    renderResumePrompt();
+    document.getElementById("dots").style.display = "none";
+    document.getElementById("nav").innerHTML = "";
+    return;
+  }
+  document.getElementById("dots").style.display = "flex";
+  renderDots();
+  if (isComplete) {
+    renderSummary();
+    renderEndNav();
+  } else {
+    renderCard();
+    renderNav();
+  }
+}
+
+function renderResumePrompt() {
+  const saved = loadState();
+  const ts = saved ? formatTimestamp(saved.timestamp) : "";
+  document.getElementById("cardArea").innerHTML = `
+    <div class="resume-card">
+      <div class="timestamp">SAVED ${ts.toUpperCase()}</div>
+      <h2>Welcome back.</h2>
+      <p>You have a vision in progress. Pick up where you left off, or start fresh?</p>
+      <div class="resume-actions">
+        <button class="btn btn-primary" onclick="resumeSaved()">RESUME</button>
+        <button class="btn btn-ghost" onclick="startFresh()">START FRESH</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderDots() {
+  const el = document.getElementById("dots");
+  el.innerHTML = "";
+  PROMPTS.forEach((_, i) => {
+    const d = document.createElement("div");
+    d.className = "dot";
+    if (isComplete) {
+      d.classList.add("done");
+    } else if (i === currentIdx) {
+      d.classList.add("active");
+    } else if (i < currentIdx) {
+      d.classList.add("done");
+    }
+    d.onclick = () => {
+      if (isComplete) return;
+      saveCurrent();
+      currentIdx = i;
+      saveState();
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    el.appendChild(d);
+  });
+}
+
+function renderCard() {
+  const p = PROMPTS[currentIdx];
+  const el = document.getElementById("cardArea");
+  const isOpen = sparksOpen[currentIdx];
+  const isCommit = p.commit;
+
+  let notesContent;
+  if (isCommit) {
+    notesContent = `
+      <div class="notes-header">
+        <div class="notes-label">YOUR FIRST MOVE</div>
+        <div class="saved-indicator" id="savedIndicator"></div>
+      </div>
+      <div class="notes-help">Name what. Name when. Make it real enough to actually do.</div>
+      <div class="dual-notes">
+        <div class="field">
+          <label for="what-field">WHAT</label>
+          <textarea id="what-field" placeholder="e.g., Display student voice quotes in every classroom" oninput="onCommitInput('what')">${escapeHtml(commitDetail.what)}</textarea>
+        </div>
+        <div class="field">
+          <label for="when-field">WHEN</label>
+          <textarea id="when-field" placeholder="e.g., First day of staff PD, August 18" oninput="onCommitInput('when')">${escapeHtml(commitDetail.when)}</textarea>
+        </div>
+      </div>
+    `;
+  } else {
+    const hasNote = notes[currentIdx] && notes[currentIdx].trim().length > 0;
+    notesContent = `
+      <div class="notes-header">
+        <div class="notes-label">NOTES (optional)</div>
+        <div class="saved-indicator ${hasNote ? 'idle' : ''}" id="savedIndicator">${hasNote ? 'AUTO-SAVED' : ''}</div>
+      </div>
+      <div class="notes-help">Type if you want. This is for your team, not a worksheet.</div>
+      <textarea id="notes-${currentIdx}" oninput="onNoteInput()">${escapeHtml(notes[currentIdx])}</textarea>
+    `;
+  }
+
+  el.innerHTML = `
+    <div class="card ${isCommit ? 'commit' : ''}">
+      <div class="card-num">CARD ${p.num}  /  05</div>
+      <div class="card-headline">${p.headline}</div>
+      <div class="card-question">${escapeHtml(p.question)}</div>
+      <div class="card-framing">${escapeHtml(p.framing)}</div>
+      <button class="spark-toggle ${isOpen ? 'open' : ''}" onclick="toggleSparks()">
+        <span class="arrow">▶</span>  ${isOpen ? 'HIDE' : 'NEED A WAY IN?'}
+      </button>
+      <div class="sparks ${isOpen ? 'open' : ''}">
+        ${p.spark.map(s => `<p>${escapeHtml(s)}</p>`).join("")}
+      </div>
+      <div class="notes-section">
+        ${notesContent}
+      </div>
+    </div>
+  `;
+}
+
+function renderNav() {
+  const el = document.getElementById("nav");
+  const isLast = currentIdx === PROMPTS.length - 1;
+  el.innerHTML = `
+    <button class="btn btn-ghost" onclick="prev()" ${currentIdx === 0 ? 'disabled' : ''}>← BACK</button>
+    <button class="btn btn-primary" onclick="next()">${isLast ? 'WRAP UP →' : 'NEXT PROMPT →'}</button>
+  `;
+}
+
+function renderSummary() {
+  const el = document.getElementById("cardArea");
+  const sections = PROMPTS.map((p, i) => {
+    const isCommit = p.commit;
+    if (isCommit) {
+      const whatStr = commitDetail.what.trim();
+      const whenStr = commitDetail.when.trim();
+      const hasAny = whatStr || whenStr;
+      return `
+        <div class="summary-section commit">
+          <h3>YOUR FIRST MOVE</h3>
+          <div class="q">${escapeHtml(p.question)}</div>
+          ${hasAny ? `
+            <div class="commit-detail">
+              <div class="commit-detail-label">WHAT</div>
+              <div class="a ${whatStr ? '' : 'empty'}">${whatStr ? escapeHtml(whatStr) : '(no action set)'}</div>
+            </div>
+            <div class="commit-detail">
+              <div class="commit-detail-label">WHEN</div>
+              <div class="a ${whenStr ? '' : 'empty'}">${whenStr ? escapeHtml(whenStr) : '(no timing set)'}</div>
+            </div>
+          ` : `<div class="a empty">(no first move set yet)</div>`}
+        </div>
+      `;
+    }
+    const note = notes[i].trim();
+    return `
+      <div class="summary-section">
+        <h3>CARD ${p.num}  ·  ${p.headline.toUpperCase()}</h3>
+        <div class="q">${escapeHtml(p.question)}</div>
+        <div class="a ${note ? '' : 'empty'}">${note ? escapeHtml(note) : '(no notes captured)'}</div>
+      </div>
+    `;
+  }).reverse().join("");
+
+  el.innerHTML = `
+    <div class="card summary">
+      <div class="card-num">YOUR VISION</div>
+      <div class="card-question">Save what surfaced.</div>
+      <div class="card-framing">Card 5 is at the top. That's the move. Send it to your team so it actually happens.</div>
+      ${sections}
+      <div class="actions">
+        <button class="btn btn-primary" onclick="copyAll()">COPY TO CLIPBOARD</button>
+        <button class="btn btn-ghost" onclick="emailAll()">EMAIL TO YOURSELVES</button>
+        <button class="btn btn-ghost" onclick="downloadText()">DOWNLOAD AS TEXT</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderEndNav() {
+  const el = document.getElementById("nav");
+  el.innerHTML = `
+    <button class="btn btn-ghost" onclick="backToConversation()">← BACK TO PROMPTS</button>
+    <button class="btn btn-ghost" onclick="resetAll()">START OVER</button>
+  `;
+}
+
+function toggleSparks() {
+  sparksOpen[currentIdx] = !sparksOpen[currentIdx];
+  render();
+}
+
+let saveTimer = null;
+
+function showSavingIndicator() {
+  const ind = document.getElementById("savedIndicator");
+  if (!ind) return;
+  ind.textContent = "SAVING...";
+  ind.classList.remove("idle");
+  ind.classList.add("show");
+}
+
+function showSavedIndicator() {
+  const ind = document.getElementById("savedIndicator");
+  if (!ind) return;
+  ind.textContent = "AUTO-SAVED";
+  setTimeout(() => { if (ind) ind.classList.add("idle"); }, 1200);
+}
+
+function onNoteInput() {
+  const ta = document.getElementById("notes-" + currentIdx);
+  if (!ta) return;
+  notes[currentIdx] = ta.value;
+  showSavingIndicator();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveState();
+    showSavedIndicator();
+  }, 350);
+}
+
+function onCommitInput(field) {
+  const ta = document.getElementById(field + "-field");
+  if (!ta) return;
+  commitDetail[field] = ta.value;
+  showSavingIndicator();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveState();
+    showSavedIndicator();
+  }, 350);
+}
+
+function saveCurrent() {
+  const p = PROMPTS[currentIdx];
+  if (p.commit) {
+    const w = document.getElementById("what-field");
+    const wh = document.getElementById("when-field");
+    if (w) commitDetail.what = w.value;
+    if (wh) commitDetail.when = wh.value;
+  } else {
+    const ta = document.getElementById("notes-" + currentIdx);
+    if (ta) notes[currentIdx] = ta.value;
+  }
+  saveState();
+}
+
+function prev() {
+  saveCurrent();
+  if (currentIdx > 0) {
+    currentIdx--;
+    saveState();
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+function next() {
+  saveCurrent();
+  if (currentIdx < PROMPTS.length - 1) {
+    currentIdx++;
+    saveState();
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } else {
+    isComplete = true;
+    saveState();
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+function backToConversation() {
+  isComplete = false;
+  render();
+}
+
+function resetAll() {
+  if (confirm("Clear all notes and start over? This cannot be undone.")) {
+    clearState();
+    notes = PROMPTS.map(() => "");
+    commitDetail = { what: "", when: "" };
+    sparksOpen = PROMPTS.map(() => false);
+    currentIdx = 0;
+    isComplete = false;
+    render();
+  }
+}
+
+function resumeSaved() {
+  const saved = loadState();
+  if (saved) {
+    notes = saved.notes;
+    commitDetail = saved.commitDetail || { what: "", when: "" };
+    currentIdx = typeof saved.currentIdx === "number" ? saved.currentIdx : 0;
+    if (currentIdx >= PROMPTS.length) currentIdx = PROMPTS.length - 1;
+  }
+  mode = "active";
+  render();
+}
+
+function startFresh() {
+  clearState();
+  notes = PROMPTS.map(() => "");
+  commitDetail = { what: "", when: "" };
+  sparksOpen = PROMPTS.map(() => false);
+  currentIdx = 0;
+  isComplete = false;
+  mode = "active";
+  render();
+}
+
+function buildExportText() {
+  const date = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  let text = `THE VISION  ·  LOOK. SOUND. FEEL.  ·  ${date}\n`;
+  text += `The Chairs Kickoff  ·  Newark Collegiate  ·  SY27\n`;
+  text += `${"=".repeat(60)}\n\n`;
+
+  const whatStr = commitDetail.what.trim();
+  const whenStr = commitDetail.when.trim();
+  text += `*** YOUR FIRST MOVE ***\n\n`;
+  text += `${PROMPTS[4].question}\n\n`;
+  text += `WHAT: ${whatStr || "(no action set)"}\n`;
+  text += `WHEN: ${whenStr || "(no timing set)"}\n\n`;
+  text += `${"=".repeat(60)}\n\n`;
+
+  PROMPTS.slice(0, 4).forEach((p, i) => {
+    text += `CARD ${p.num}  ·  ${p.headline.toUpperCase()}\n`;
+    text += `${p.question}\n\n`;
+    text += `${notes[i].trim() || "(no notes captured)"}\n\n`;
+    text += `${"-".repeat(40)}\n\n`;
+  });
+
+  return text;
+}
+
+function copyAll() {
+  const text = buildExportText();
+  navigator.clipboard.writeText(text).then(
+    () => showToast("Copied to clipboard"),
+    () => {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); showToast("Copied to clipboard"); }
+      catch (e) { showToast("Copy failed - try Download"); }
+      document.body.removeChild(ta);
+    }
+  );
+}
+
+function emailAll() {
+  const subject = encodeURIComponent("Vision: LOOK. SOUND. FEEL.  ·  SY27");
+  const body = encodeURIComponent(buildExportText());
+  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
+function downloadText() {
+  const text = buildExportText();
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "the-vision.txt";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Downloaded");
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2000);
+}
+
+function escapeHtml(str) {
+  if (typeof str !== "string") return "";
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function init() {
+  const saved = loadState();
+  if (saved && hasMeaningfulNotes(saved.notes, saved.commitDetail)) {
+    mode = "resume-prompt";
+    render();
+  } else {
+    mode = "active";
+    render();
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
